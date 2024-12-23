@@ -2,7 +2,6 @@ import streamlit as st
 import time
 import random
 
-# Custom CSS for room themes and styling
 st.markdown("""
 <style>
     .main {
@@ -55,7 +54,7 @@ st.markdown("""
         border: 1px solid rgba(32, 0, 44, 0.2);
     }
     
-    /* Room Decorations */
+    
     .room-decor {
         position: absolute;
         top: 0;
@@ -127,20 +126,7 @@ st.markdown("""
         text-shadow: 0 0 10px rgba(255,255,255,0.5);
         margin-bottom: 1rem;
     }
-     .css-18e3th9 {
-        text-align: center;
-        border: 3px solid #FF6600;  /* Neon Orange Border */
-        padding: 10px;
-        border-radius: 10px;
-    }
-
-    /* Style for the Streamlit markdown with neon orange border and centered */
-    .css-1v0mbdj {
-        text-align: center;
-        border: 3px solid #FF6600;  /* Neon Orange Border */
-        padding: 10px;
-        border-radius: 10px;
-    }
+    
 </style>
 """, unsafe_allow_html=True)
 
@@ -158,7 +144,8 @@ rooms = [
             "Schrödinger's cat would understand me"
         ],
         "difficulty": "🌟🌟",
-        "points": 20
+        "points": 20,
+        "image":"image.png"
     },
     {
         "name": "Cybersecurity Hub",
@@ -262,17 +249,24 @@ if st.session_state.current_room < len(rooms):
             </div>
         </div>
     """, unsafe_allow_html=True)
+    if "image" in current_room and current_room["image"]:
+        st.image(current_room["image"], caption="Clue Image")
     
     # Hint system
     if st.button("🔍 Request Hint"):
-        if st.session_state.hints_shown < len(current_room['hints']):
-            st.markdown(f"""
-                <div style="padding: 1rem; background: rgba(255, 144, 104, 0.1); border-radius: 5px;">
-                    <p style="color: #ff9068;">Hint #{st.session_state.hints_shown + 1}: {current_room['hints'][st.session_state.hints_shown]}</p>
-                </div>
-            """, unsafe_allow_html=True)
-            st.session_state.hints_shown += 1
+    # Calculate the hint index using modulo to repeat hints
+        hint_index = st.session_state.hints_shown % len(current_room['hints'])
     
+    # Display the hint
+        st.markdown(f"""
+        <div style="padding: 1rem; background: rgba(255, 144, 104, 0.1); border-radius: 5px;">
+            <p style="color: #ff9068;">Hint #{hint_index + 1}: {current_room['hints'][hint_index]}</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Increment the counter for shown hints
+        st.session_state.hints_shown += 1
+
     # Answer input
     answer = st.text_input("Enter the code to unlock the door:", key=f"answer_{st.session_state.current_room}")
     
